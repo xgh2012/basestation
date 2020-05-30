@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>消息发送测试</title>
+    <link rel="stylesheet" type="text/css" href="/public/css/layui.css" />
+    <script src="/public/js/layui.js"></script>
+    <script src="/public/js/jquery.min.js"></script>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/public/css/index.css">
+    <!-- import Vue before Element -->
+    <script src="/public/js/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="/public/js/index.js"></script>
+</head>
+<body>
+<br>
+<h1 style="margin: 0 auto;width: 100%;text-align: center;">{{.title}}</h1>
+<br>
+<div id="app">
+    <el-form ref="form" :model="form" label-width="140px">
+        <el-button type="primary"  onclick="window.location.reload()">刷新页面</el-button>
+        <el-form-item label="环境设置">
+            <el-select v-model="form.env" placeholder="请选择发送环境">
+                <el-option label="测试" value="dev"></el-option>
+                <el-option label="正式" value="prd"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="APP设置">
+            <el-select v-model="form.client" placeholder="请选择发送APP">
+                <el-option label="龙管家" value="lgj"></el-option>
+                <el-option label="易上网" value="baoan"></el-option>
+                <el-option label="E实名" value="eauth"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="平台设置">
+            <el-checkbox-group v-model="form.platform">
+                <el-checkbox label="all" value="all">全部</el-checkbox>
+                <el-checkbox label="android" value="android">安卓</el-checkbox>
+                <el-checkbox label="ios" value="ios">IOS</el-checkbox>
+            </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="消息标题">
+            <el-input v-model="form.title"></el-input>
+        </el-form-item>
+        <el-form-item label="消息内容">
+            <el-input v-model="form.content"></el-input>
+        </el-form-item>
+        <el-form-item label="通知栏图标">
+            <el-input v-model="form.image_url"></el-input>
+        </el-form-item>
+        <el-form-item label="点击类型">
+            <el-select v-model="form.click_type" placeholder="请选择点击类型">
+                <el-option label="直接打开url" key="url" value="url"></el-option>
+                <el-option label="APP页面" key="page" value="page"></el-option>
+                <el-option label="点击tab" key="tab" value="tab"></el-option>
+            </el-select>
+        </el-form-item>
+        <template v-if="form.click_type == 'url'">
+            <el-form-item label="跳转地址">
+                <el-input v-model="form.fun_url"></el-input>
+            </el-form-item>
+        </template>
+
+        <template v-if="form.click_type == 'tab'">
+            <el-form-item label="打开tab(IOS)">
+                <el-select v-model="form.tab_id" placeholder="请选择IOS点击tab">
+                    <el-option :label="0" key="0" value="0"></el-option>
+                    <el-option :label="1" key="1" value="1"></el-option>
+                    <el-option :label="2" key="2" value="2"></el-option>
+                    <el-option :label="3" key="3" value="3"></el-option>
+                    <el-option :label="4" key="4" value="4"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="打开tab(安卓)">
+                <el-select v-model="form.tab_id_and" placeholder="请选择IOS点击tab">
+                    <el-option :label="0" key="0" value="0">首页</el-option>
+                    <el-option :label="1" key="1" value="1">发现</el-option>
+                    <el-option :label="2" key="2" value="2">网吧</el-option>
+                    <el-option :label="4" key="4" value="4">我的</el-option>
+                </el-select>
+            </el-form-item>
+        </template>
+        <template v-if="form.click_type == 'page'">
+            <el-form-item label="打开APP子页面">
+                <el-input v-model="form.sub_page"></el-input>
+            </el-form-item>
+        </template>
+
+        <template v-if="form.click_type == 'page' || form.click_type == 'tab'">
+            <el-form-item label="打开url">
+                <el-input v-model="form.page_url"></el-input>
+            </el-form-item>
+        </template>
+
+        <template>
+            <el-form-item label="新增参数">
+                <el-button @click="addRow">新增参数</el-button>
+            </el-form-item>
+            <el-form-item v-for="(domain, index) in form.rows" :label="'参数' + (index+1)" :key="domain.rowKey">
+                <el-col :span="4">
+                    <el-input v-model="domain.rowKey"></el-input>
+                </el-col>
+                <el-col class="line" :span="1"> 值 </el-col>
+                <el-col :span="10">
+                    <el-input v-model="domain.rowValue"></el-input>
+                </el-col>
+                <el-col :span="2"><el-button @click.prevent="removeRow(domain)">删除</el-button></el-col>
+            </el-form-item>
+        </template>
+
+        <el-form-item label="发送人员">
+            <el-input type="textarea" :rows="3" v-model="form.registration_id" placeholder="英文 , 分割"></el-input>
+        </el-form-item>
+        <br>
+        <br>
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">立即发送</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+</body>
+
+<script>
+    layui.use(['layer']);
+    var layer = layui.layer;
+
+    function post(url,data) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            url: url,
+            data: JSON.stringify(data),
+            success: function(data){
+                if (data.result != undefined && data.result != null){
+                    if (data.result == "P0000"){
+                        layer.msg("发送成功："+data.message)
+                    }else{
+                        layer.confirm(data.message, {
+                            btn: ['确认'] //按钮
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data:{
+            form:{
+                env: 'dev',
+                client: 'lgj',
+                platform: ['all'],
+                title:'测试',
+                content:'内容',
+                image_url:'',
+                click_type:'tab',
+                tab_id:'1',
+                tab_id_and:'2',
+                sub_page:'',
+                page_url:'',
+                registration_id:'1517bfd3f7a8bb972ec',
+                rows: [{
+                    rowKey: '',
+                    rowValue: ''
+                }]
+            },
+            config:{
+
+            },
+        },
+        methods:{
+            onSubmit:function (){
+                post('/send',app.form);
+            },
+            addRow:function () {
+                this.form.rows.push({
+                    rowKey: '',
+                    rowValue: '',
+                    key: Date.now()
+                });
+            },
+            removeRow:function (item){
+                var index = this.form.rows.indexOf(item)
+                if (index !== -1) {
+                    this.rows.splice(index, 1)
+                }
+            }
+        }
+    });
+</script>
+
+</html>

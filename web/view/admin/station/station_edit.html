@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/public/layuimini/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="/public/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="/public/layuimini/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+            <legend>方框风格的表单集合</legend>
+        </fieldset>
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">基站编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="st_no" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">基站名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="number" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <!--<div class="layui-form-item">
+                <label class="layui-form-label">基站编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="username" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">基站名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>-->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">建站日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="date" id="date1" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">行内表单</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="number" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <!--<div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">请务必填写用户名</div>
+            </div>-->
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">发射频率</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price_min" placeholder="开始频率" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price_max" placeholder="结束频率" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="area-picker">
+                <div class="layui-form-label">所在地区</div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select name="province" class="province-selector" lay-filter="province-1">
+                        <option value="">请选择省</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select name="city" class="city-selector" lay-filter="city-1">
+                        <option value="">请选择市</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select name="county" class="county-selector" lay-filter="county-1">
+                        <option value="">请选择区</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细地址</label>
+                <div class="layui-input-block">
+                    <input type="text" id="address" name="address" autocomplete="off" placeholder="请输入地址" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">坐标选择</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price_min" lay-verify="required"  readonly id="lat" placeholder="lat 经度" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price_max" lay-verify="required"  readonly id="lng" placeholder="lng 纬度" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" onclick="test()" style="cursor: pointer;color: #00a2d4 !important;"><i class="fa fa-location-arrow"></i>点击打开地图选择坐标</div>
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">基站状态</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">照片上传</label>
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" id="test2">多图片上传</button>
+                    <div class="layui-upload-list">
+                        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="demo2"></div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注信息</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入备注信息" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit="" lay-filter="demo2">跳转式提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/public/layuimini/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/public/layuimini/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    function test(){
+        layer.open({
+            title: '添加用户',
+            type: 2,
+            shade: 0.2,
+            maxmin:true,
+            shadeClose: true,
+            area: ['60%', '80%'],
+            content: '/station/map',
+        });
+    }
+    var $ = null;
+    layui.use(['jquery','form', 'layedit', 'laydate', 'layarea','upload'], function () {
+        $ = layui.jquery;
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate
+            , layarea = layui.layarea
+            , upload = layui.upload;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+
+        layarea.render({
+            elem: '#area-picker',
+            change: function (res) {
+                //选择结果
+                console.log(res);
+                $("#address").val(res.province+res.city+res.county);
+            }
+        });
+
+        var files = null
+        //执行实例
+        //普通图片上传
+        //多图片上传
+        upload.render({
+            elem: '#test2'
+            ,url: 'https://httpbin.org/post' //改成您自己的上传接口
+            ,multiple: true
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img" style="width: 100px;height: 120px;margin-right: 10px;">')
+                });
+            }
+            ,done: function(res){
+                //上传完毕
+            }
+        });
+
+        //创建一个编辑器
+        var editIndex = layedit.build('LAY_demo_editor');
+
+        //自定义验证规则
+        form.verify({
+            title: function (value) {
+                if (value.length < 5) {
+                    return '标题至少得5个字符啊';
+                }
+            }
+            , pass: [
+                /^[\S]{6,12}$/
+                , '密码必须6到12位，且不能出现空格'
+            ]
+            , content: function (value) {
+                layedit.sync(editIndex);
+            }
+        });
+
+        //监听指定开关
+        form.on('switch(switchTest)', function (data) {
+            layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                offset: '6px'
+            });
+            layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            layer.open({
+                title: '编辑基站',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/station/map',
+            });
+            layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            });
+            return false;
+        });
+
+        //表单初始赋值
+        form.val('example', {
+            "username": "贤心" // "name": "value"
+            , "password": "123456"
+            , "interest": 1
+            , "like[write]": true //复选框选中状态
+            , "close": true //开关状态
+            , "sex": "女"
+            , "desc": "我爱 layui"
+        });
+    });
+
+</script>
+
+</body>
+</html>

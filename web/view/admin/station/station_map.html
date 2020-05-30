@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+        #allmap {width: 100%;height: 90%;overflow: hidden;}
+        #location {
+            margin-left: 30px;
+        }
+    </style>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=GsQTZyGZqnGQnTwGGhGNgc40clKKwxxm"></script>
+    <script src="/public/layuimini/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+    <script src="/public/layuimini/js/lay-config.js?v=2.0.0" charset="utf-8"></script>
+    <script src="/public/js/common.js"></script>
+    <title>基站地图</title>
+</head>
+<body>
+<div id="allmap"></div>
+<br>
+<div id="location">
+    <input id="id" type="hidden" value="{{.id}}">
+    经度<input id="lat" readonly value="{{.lat}}">&nbsp;&nbsp;&nbsp;&nbsp; 纬度<input readonly id="lng" value="{{.lng}}">&nbsp;&nbsp;<button type="submit" onclick="submit()">确定</button>
+</div>
+</body>
+</html>
+
+<script>
+    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+
+    function submit() {
+        let data = {
+            "id" : document.getElementById("id").value,
+            "lat" : document.getElementById("lat").value,
+            "lng" : document.getElementById("lng").value
+        };
+        post("/station/savemap",data);
+
+        parent.$('#lat').val(data.lat);
+        parent.$('#lng').val(data.lng);
+        parent.layer.close(index);
+    }
+
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point({{.lng}},{{.lat}}), 13);  // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    // map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+
+    //设置地图类型
+    //BMAP_NORMAL_MAP    此地图类型展示普通街道视图
+    //BMAP_PERSPECTIVE_MAP    此地图类型展示透视图像视图
+    //BMAP_SATELLITE_MAP    此地图类型展示卫星视图
+    //BMAP_HYBRID_MAP    此地图类型展示卫星和路网的混合视图
+    //map.setMapType(BMAP_NORMAL_MAP);
+    map.setMapType(BMAP_HYBRID_MAP);
+
+    // 编写自定义函数,创建标注
+    function addMarker(point){
+        var marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        marker.enableDragging();
+
+        marker.addEventListener("dragend", function (e) {
+           console.log(e);
+           document.getElementById("lat").value = e.point.lat;
+           document.getElementById("lng").value = e.point.lng;
+            // 创建地理编码实例
+            var myGeo = new BMap.Geocoder();
+            // 根据坐标得到地址描述
+            myGeo.getLocation(new BMap.Point(e.point.lng, e.point.lat), function (result) {
+                console.log(result)
+            });
+        });
+
+        // marker.addEventListener("click", openFw);
+        marker.openInfoWindow(infoWindow)
+    }
+
+    var openFw = function(){
+        this.openInfoWindow(infoWindow);
+        //图片加载完毕重绘infowindow
+        document.getElementById('imgDemo').onload = function (){
+            infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+        }
+    };
+    // 随机向地图添加25个标注
+    /*var bounds = map.getBounds();
+    var sw = bounds.getSouthWest();
+    var ne = bounds.getNorthEast();
+    var lngSpan = Math.abs(sw.lng - ne.lng);
+    var latSpan = Math.abs(ne.lat - sw.lat);
+    for (var i = 0; i < 25; i ++) {
+        var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+        addMarker(point);
+    }*/
+
+    var sContent =
+        "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>天安门</h4>" +
+        "<img style='float:right;margin:4px' id='imgDemo' src='http://lbsyun.baidu.com/jsdemo/img/tianAnMen.jpg' width='139' height='104' title='天安门'/>" +
+        "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>天安门坐落在中国北京市中心,故宫的南侧,与天安门广场隔长安街相望,是清朝皇城的大门...</p>" +
+        "</div>";
+    var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+    var point = new BMap.Point({{.lng}},{{.lat}});
+    addMarker(point);
+</script>
